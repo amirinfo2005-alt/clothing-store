@@ -1,0 +1,642 @@
+﻿<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>متجر الملابس - الجزائر</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Arial, sans-serif;
+        }
+
+        body {
+            background-color: #f5f5f5;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #2C3E50, #E74C3C);
+            color: white;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            font-size: 1.2em;
+            opacity: 0.9;
+        }
+
+        .navbar {
+            background-color: #2C3E50;
+            padding: 15px;
+            text-align: center;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .navbar a {
+            color: white;
+            text-decoration: none;
+            margin: 0 15px;
+            font-size: 1.1em;
+            padding: 10px;
+            cursor: pointer;
+        }
+
+        .navbar a:hover {
+            background-color: #E74C3C;
+            border-radius: 5px;
+        }
+
+        .search-section {
+            background-color: white;
+            padding: 20px;
+            text-align: center;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        .search-box {
+            width: 80%;
+            max-width: 500px;
+            padding: 12px;
+            font-size: 1.1em;
+            border: 2px solid #2C3E50;
+            border-radius: 25px;
+            margin-bottom: 15px;
+        }
+
+        .filter-buttons {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .filter-btn {
+            padding: 10px 20px;
+            background-color: #2C3E50;
+            color: white;
+            border: none;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 1em;
+            transition: all 0.3s;
+        }
+
+        .filter-btn:hover, .filter-btn.active {
+            background-color: #E74C3C;
+            transform: scale(1.05);
+        }
+
+        .products-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 25px;
+            padding: 30px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .product-card {
+            background-color: white;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            transition: transform 0.3s, box-shadow 0.3s;
+            cursor: pointer;
+        }
+
+        .product-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 8px 16px rgba(0,0,0,0.2);
+        }
+
+        .product-image {
+            width: 100%;
+            height: 300px;
+            background-size: cover;
+            background-position: center;
+            position: relative;
+        }
+
+        .sale-badge {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background-color: #E74C3C;
+            color: white;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-weight: bold;
+        }
+
+        .product-info {
+            padding: 20px;
+        }
+
+        .product-category {
+            color: #E74C3C;
+            font-size: 0.9em;
+            margin-bottom: 5px;
+        }
+
+        .product-title {
+            font-size: 1.3em;
+            margin-bottom: 10px;
+            color: #2C3E50;
+        }
+
+        .product-price {
+            font-size: 1.5em;
+            color: #27AE60;
+            font-weight: bold;
+        }
+
+        .product-old-price {
+            text-decoration: line-through;
+            color: #999;
+            font-size: 1em;
+            margin-right: 10px;
+        }
+
+        .add-to-cart {
+            width: 100%;
+            padding: 12px;
+            background-color: #2C3E50;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 1.1em;
+            cursor: pointer;
+            margin-top: 15px;
+            transition: background-color 0.3s;
+        }
+
+        .add-to-cart:hover {
+            background-color: #E74C3C;
+        }
+
+        .cart-icon {
+            position: fixed;
+            bottom: 30px;
+            left: 30px;
+            background-color: #E74C3C;
+            color: white;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5em;
+            cursor: pointer;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+            z-index: 1000;
+        }
+
+        .cart-count {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            background-color: #2C3E50;
+            color: white;
+            width: 25px;
+            height: 25px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.7em;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.7);
+            z-index: 1000;
+            overflow-y: auto;
+        }
+
+        .modal-content {
+            background-color: white;
+            margin: 5% auto;
+            padding: 30px;
+            width: 90%;
+            max-width: 600px;
+            border-radius: 15px;
+            position: relative;
+        }
+
+        .close-btn {
+            position: absolute;
+            top: 15px;
+            left: 15px;
+            font-size: 2em;
+            cursor: pointer;
+            color: #E74C3C;
+        }
+
+        .size-btn {
+            padding: 10px 20px;
+            margin: 5px;
+            border: 2px solid #2C3E50;
+            background-color: white;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+
+        .size-btn.selected {
+            background-color: #2C3E50;
+            color: white;
+        }
+
+        .contact-section {
+            background-color: white;
+            padding: 50px;
+            text-align: center;
+        }
+
+        .contact-info {
+            font-size: 1.2em;
+            line-height: 2;
+        }
+
+        .map-container {
+            margin-top: 30px;
+            border-radius: 15px;
+            overflow: hidden;
+        }
+
+        .order-form input, .order-form select, .order-form textarea {
+            width: 100%;
+            padding: 12px;
+            margin-bottom: 15px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 1em;
+        }
+
+        .order-form button {
+            background-color: #27AE60;
+            color: white;
+            padding: 15px;
+            border: none;
+            border-radius: 10px;
+            font-size: 1.2em;
+            cursor: pointer;
+            width: 100%;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="header">
+        <h1>متجر الملابس</h1>
+        <p>أفضل الملابس في الجزائر</p>
+    </div>
+
+    <div class="navbar">
+        <a href="#products">المنتجات</a>
+        <a href="#contact">اتصل بنا</a>
+    </div>
+
+    <div class="search-section" id="products">
+        <input type="text" class="search-box" placeholder="ابحث عن منتج..." id="searchInput" onkeyup="filterProducts()">
+        <div class="filter-buttons">
+            <button class="filter-btn active" onclick="filterCategory('all', this)">الكل</button>
+            <button class="filter-btn" onclick="filterCategory('men', this)">رجال</button>
+            <button class="filter-btn" onclick="filterCategory('women', this)">نساء</button>
+            <button class="filter-btn" onclick="filterCategory('kids', this)">أطفال</button>
+            <button class="filter-btn" onclick="filterCategory('traditional', this)">تقليدي</button>
+        </div>
+    </div>
+
+    <div class="products-grid" id="productsGrid"></div>
+
+    <div class="contact-section" id="contact">
+        <h2 style="margin-bottom: 30px; color: #2C3E50;">موقع المتجر</h2>
+        <div class="contact-info">
+            <p>العنوان: الجزائر العاصمة، وسط المدينة</p>
+            <p>الهاتف: 0555 12 34 56</p>
+            <p>البريد الإلكتروني: info@clothing-store.dz</p>
+            <p>أوقات العمل: السبت - الخميس: 9:00 - 19:00</p>
+            <p>الجمعة: 14:00 - 19:00</p>
+        </div>
+        <div class="map-container">
+            <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3191.885797854345!2d3.058752315289174!3d36.75304497976362!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x128fb1e5cec6d4b7%3A0xa1d09e6a6a6a6a6a!2sAlger%20Centre!5e0!3m2!1sar!2sdz!4v1635000000000!5m2!1sar!2sdz" 
+                    width="100%" height="400" style="border:0;" allowfullscreen="" loading="lazy">
+            </iframe>
+        </div>
+    </div>
+
+    <div class="cart-icon" onclick="showCart()">
+        سلة
+        <span class="cart-count" id="cartCount">0</span>
+    </div>
+
+    <!-- نموذج تفاصيل المنتج -->
+    <div class="modal" id="productModal">
+        <div class="modal-content">
+            <span class="close-btn" onclick="closeModal()">&times;</span>
+            <div id="productDetails"></div>
+        </div>
+    </div>
+
+    <!-- نموذج السلة -->
+    <div class="modal" id="cartModal">
+        <div class="modal-content">
+            <span class="close-btn" onclick="closeCart()">&times;</span>
+            <h2 style="margin-bottom: 20px;">سلة التسوق</h2>
+            <div id="cartItems"></div>
+            <div style="margin-top: 20px; text-align: center;">
+                <h3>المجموع: <span id="cartTotal">0</span> دج</h3>
+                <button style="padding: 15px 30px; background-color: #27AE60; color: white; border: none; border-radius: 10px; font-size: 1.2em; margin-top: 15px; cursor: pointer;" onclick="checkout()">
+                    إتمام الطلب
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- نموذج معلومات المشتري -->
+    <div class="modal" id="checkoutModal">
+        <div class="modal-content">
+            <span class="close-btn" onclick="closeCheckout()">&times;</span>
+            <h2 style="margin-bottom: 20px;">معلومات التوصيل</h2>
+            <form class="order-form" id="orderForm">
+                <input type="text" id="customerName" placeholder="الاسم الكامل" required>
+                <input type="tel" id="customerPhone" placeholder="رقم الهاتف" required>
+                <input type="text" id="customerWilaya" placeholder="الولاية" required>
+                <input type="text" id="customerCommune" placeholder="البلدية" required>
+                <textarea id="customerAddress" placeholder="العنوان الكامل" rows="3" required></textarea>
+                <select id="paymentMethod" required>
+                    <option value="">اختر طريقة الدفع</option>
+                    <option value="cod">الدفع عند الاستلام</option>
+                    <option value="baridimob">بريدي موب</option>
+                    <option value="ccp">حوالة بريدية CCP</option>
+                </select>
+                <button type="submit">تأكيد الطلب</button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // تحميل المنتجات من التخزين المحلي
+        let products = JSON.parse(localStorage.getItem('products')) || [
+            {
+                id: 1,
+                title: "قميص رجالي أنيق",
+                category: "men",
+                categoryName: "رجال",
+                price: 2800,
+                oldPrice: 3500,
+                image: "https://images.unsplash.com/photo-1596755094514-f87e34085b2c?w=400&h=500&fit=crop",
+                sizes: ["S", "M", "L", "XL"],
+                description: "قميص رجالي أنيق مصنوع من القطن عالي الجودة"
+            },
+            {
+                id: 2,
+                title: "فستان نسائي عصري",
+                category: "women",
+                categoryName: "نساء",
+                price: 4500,
+                oldPrice: null,
+                image: "https://images.unsplash.com/photo-1595777457583-95e059d581b8?w=400&h=500&fit=crop",
+                sizes: ["XS", "S", "M", "L"],
+                description: "فستان نسائي عصري مناسب لجميع المناسبات"
+            },
+            {
+                id: 3,
+                title: "جلباب تقليدي جزائري",
+                category: "traditional",
+                categoryName: "تقليدي",
+                price: 6500,
+                oldPrice: 7500,
+                image: "https://images.unsplash.com/photo-1594938298603-c8148c4dae35?w=400&h=500&fit=crop",
+                sizes: ["M", "L", "XL"],
+                description: "جلباب تقليدي جزائري أصيل بتطريز يدوي"
+            }
+        ];
+
+        let orders = JSON.parse(localStorage.getItem('orders')) || [];
+        let cart = [];
+        let selectedCategory = 'all';
+
+        function saveProducts() {
+            localStorage.setItem('products', JSON.stringify(products));
+        }
+
+        function saveOrders() {
+            localStorage.setItem('orders', JSON.stringify(orders));
+        }
+
+        function displayProducts(productsList) {
+            const grid = document.getElementById('productsGrid');
+            grid.innerHTML = '';
+            
+            productsList.forEach(product => {
+                const card = document.createElement('div');
+                card.className = 'product-card';
+                card.innerHTML = `
+                    <div class="product-image" style="background-image: url('${product.image}')">
+                        ${product.oldPrice ? '<span class="sale-badge">تخفيض!</span>' : ''}
+                    </div>
+                    <div class="product-info">
+                        <div class="product-category">${product.categoryName}</div>
+                        <div class="product-title">${product.title}</div>
+                        <div>
+                            ${product.oldPrice ? `<span class="product-old-price">${product.oldPrice} دج</span>` : ''}
+                            <span class="product-price">${product.price} دج</span>
+                        </div>
+                        <button class="add-to-cart" onclick="showProductDetails(${product.id})">
+                            عرض التفاصيل
+                        </button>
+                    </div>
+                `;
+                grid.appendChild(card);
+            });
+        }
+
+        function filterProducts() {
+            const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+            let filtered = products;
+            
+            if (selectedCategory !== 'all') {
+                filtered = filtered.filter(p => p.category === selectedCategory);
+            }
+            
+            if (searchTerm) {
+                filtered = filtered.filter(p => 
+                    p.title.toLowerCase().includes(searchTerm) ||
+                    p.categoryName.includes(searchTerm)
+                );
+            }
+            
+            displayProducts(filtered);
+        }
+
+        function filterCategory(category, button) {
+            selectedCategory = category;
+            document.querySelectorAll('.filter-btn').forEach(btn => btn.classList.remove('active'));
+            button.classList.add('active');
+            filterProducts();
+        }
+
+        function showProductDetails(productId) {
+            const product = products.find(p => p.id === productId);
+            const modal = document.getElementById('productModal');
+            const details = document.getElementById('productDetails');
+            
+            details.innerHTML = `
+                <h2 style="color: #2C3E50; margin-bottom: 20px;">${product.title}</h2>
+                <img src="${product.image}" style="width: 100%; max-height: 400px; object-fit: cover; border-radius: 10px; margin-bottom: 20px;">
+                <p style="font-size: 1.2em; margin-bottom: 15px;">${product.description}</p>
+                <p style="font-size: 1.5em; color: #27AE60; font-weight: bold; margin-bottom: 15px;">
+                    ${product.oldPrice ? `<span style="text-decoration: line-through; color: #999; font-size: 0.7em;">${product.oldPrice} دج</span> ` : ''}
+                    ${product.price} دج
+                </p>
+                <h3 style="margin: 15px 0;">اختر المقاس:</h3>
+                <div>
+                    ${product.sizes.map(size => `
+                        <button class="size-btn" onclick="selectSize(this, '${size}')">${size}</button>
+                    `).join('')}
+                </div>
+                <button class="add-to-cart" onclick="addToCart(${product.id})" style="margin-top: 20px;">
+                    أضف إلى السلة
+                </button>
+            `;
+            
+            modal.style.display = 'block';
+            window.selectedProduct = product;
+            window.selectedSize = null;
+        }
+
+        function selectSize(button, size) {
+            document.querySelectorAll('.size-btn').forEach(btn => btn.classList.remove('selected'));
+            button.classList.add('selected');
+            window.selectedSize = size;
+        }
+
+        function addToCart(productId) {
+            const product = products.find(p => p.id === productId);
+            const size = window.selectedSize || 'M';
+            
+            cart.push({
+                ...product,
+                selectedSize: size
+            });
+            
+            updateCartCount();
+            closeModal();
+            alert('تمت إضافة المنتج إلى السلة!');
+        }
+
+        function updateCartCount() {
+            document.getElementById('cartCount').textContent = cart.length;
+        }
+
+        function showCart() {
+            const modal = document.getElementById('cartModal');
+            const items = document.getElementById('cartItems');
+            
+            if (cart.length === 0) {
+                items.innerHTML = '<p style="text-align: center; font-size: 1.2em;">السلة فارغة</p>';
+            } else {
+                items.innerHTML = cart.map((item, index) => `
+                    <div style="display: flex; align-items: center; margin-bottom: 15px; padding: 10px; border: 1px solid #ddd; border-radius: 10px;">
+                        <img src="${item.image}" style="width: 60px; height: 60px; object-fit: cover; border-radius: 5px; margin-left: 15px;">
+                        <div style="flex: 1;">
+                            <h4>${item.title}</h4>
+                            <p>المقاس: ${item.selectedSize}</p>
+                            <p style="color: #27AE60;">${item.price} دج</p>
+                        </div>
+                        <button onclick="removeFromCart(${index})" style="background-color: #E74C3C; color: white; border: none; padding: 5px 10px; border-radius: 5px; cursor: pointer;">
+                            حذف
+                        </button>
+                    </div>
+                `).join('');
+            }
+            
+            const total = cart.reduce((sum, item) => sum + item.price, 0);
+            document.getElementById('cartTotal').textContent = total;
+            
+            modal.style.display = 'block';
+        }
+
+        function removeFromCart(index) {
+            cart.splice(index, 1);
+            updateCartCount();
+            showCart();
+        }
+
+        function checkout() {
+            if (cart.length === 0) {
+                alert('السلة فارغة!');
+                return;
+            }
+            
+            closeCart();
+            document.getElementById('checkoutModal').style.display = 'block';
+        }
+
+        document.getElementById('orderForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const order = {
+                date: new Date().toLocaleString('ar-DZ'),
+                customer: {
+                    name: document.getElementById('customerName').value,
+                    phone: document.getElementById('customerPhone').value,
+                    wilaya: document.getElementById('customerWilaya').value,
+                    commune: document.getElementById('customerCommune').value,
+                    address: document.getElementById('customerAddress').value
+                },
+                paymentMethod: document.getElementById('paymentMethod').value,
+                items: cart,
+                total: cart.reduce((sum, item) => sum + item.price, 0)
+            };
+            
+            orders.push(order);
+            saveOrders();
+            
+            this.reset();
+            
+            alert('تم استلام طلبك بنجاح! سنتصل بك قريباً لتأكيد الطلب.');
+            closeCheckout();
+            cart = [];
+            updateCartCount();
+        });
+
+        function closeModal() {
+            document.getElementById('productModal').style.display = 'none';
+        }
+
+        function closeCart() {
+            document.getElementById('cartModal').style.display = 'none';
+        }
+
+        function closeCheckout() {
+            document.getElementById('checkoutModal').style.display = 'none';
+        }
+
+        window.onclick = function(event) {
+            if (event.target.className === 'modal') {
+                event.target.style.display = 'none';
+            }
+        }
+
+        displayProducts(products);
+    </script>
+</body>
+</html>
